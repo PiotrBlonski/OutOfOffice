@@ -67,5 +67,18 @@ namespace OutOfOffice.ViewModels
                     await Shell.Current.GoToAsync("..");
             }
         }
+
+        [RelayCommand]
+        public async Task UploadAvatar()
+        {
+            FileResult? Result = await FilePicker.Default.PickAsync();
+
+            if (Result != null && (Result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || Result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase)))
+            {
+                HttpResponseMessage Response = Globals.User.UploadAvatar(Result.FullPath, Employee.Id);
+                if (Response.IsSuccessStatusCode) OnPropertyChanged(nameof(Employee));
+            }
+            else if (Result != null) await Shell.Current.DisplayAlert("Error", "Incorrect file format only .jpg or .png files are compatible", "OK");
+        }
     }
 }

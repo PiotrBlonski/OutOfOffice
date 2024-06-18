@@ -5,6 +5,7 @@ namespace OutOfOffice
 {
     public static class Globals
     {
+        public static string Address = "http://localhost:3000";
         public static User User = new();
         public static List<string>? Reasons { get => User.GetReasons(); }
         public static List<string>? ProjectTypes { get => User.GetProjectTypes(); }

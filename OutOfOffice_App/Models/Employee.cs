@@ -17,6 +17,7 @@ namespace OutOfOffice.Models
         public string StatusString => StatusToString(Status);
         public string Position => Globals.Position(PositionId);
         public string Subdivision => Globals.Subdivision(SubdivisionId);
+        public string Avatar => Globals.Address + "/employees/avatar/" + Id;
         public static string StatusToString(int Status)
         {
             return Status switch

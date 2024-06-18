@@ -17,7 +17,6 @@ namespace OutOfOffice.ViewModels
         [ObservableProperty]
         bool canViewAbsences;
 
-        [ObservableProperty]
-        string avatar;
+        public void UpdateProfile() => OnPropertyChanged(nameof(Employee));
     }
 }
