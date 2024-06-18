@@ -31,6 +31,7 @@
                         BackgroundColor="{StaticResource Tertiary}"
                         FontSize="30"
                         FontAttributes="Bold"
+                        IsVisible="{Binding CanEditProjects}"
                         TextColor="{StaticResource Secondary}"
                         Command="{Binding CreateProjectCommand}"
                         CornerRadius="10">

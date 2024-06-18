@@ -18,7 +18,7 @@ public partial class ProjectListPage : ContentPage
     {
         viewmodel.Projects = Globals.User.GetProjects().ToObservableCollection();
         viewmodel.FilteredProjects = viewmodel.Projects;
-
+        viewmodel.CanEditProjects = Globals.User.Employee.CanEditProjects;
         UpdateSort();
     }
 

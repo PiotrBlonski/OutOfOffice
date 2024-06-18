@@ -6,18 +6,23 @@ const connection = require('../dbconnection/connection')
 
 //get list of projects
 router.get('/', auth.authenticateToken, (req, res) => {
-    allowed = ['Administrator', 'Project Manager']
+    allowed = ['Administrator', 'HR Manager', 'Project Manager', 'Employee']
 
     //do not allow users outside of list
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
     let constrain = ''
-    //project manager is limited only to their projects
-    if (req.userdata.Position == allowed[1])
+    let distinct = req.userdata.Position == allowed[1] ? 'DISTINCT' : ''
+    //apply constrains
+    if (req.userdata.Position == allowed[3])
+        constrain = `JOIN projectmember ON projectmember.Project_Id = project.Id WHERE projectmember.Employee_Id = ${req.userdata.Id}`
+    else if (req.userdata.Position == allowed[2])
         constrain = `WHERE project.Manager_Id = ${req.userdata.Id}`
+    else if (req.userdata.Position == allowed[1])
+        constrain = `JOIN projectmember ON projectmember.Project_Id = project.Id JOIN employee ON employee.Id = projectmember.Employee_Id JOIN peoplepartner ON peoplepartner.Employee_Id = employee.Id WHERE peoplepartner.Partner_Id = ${req.userdata.Id}`
 
-    connection.query(`SELECT project.*, project.ProjectType_Id - 1 AS ProjectTypeId FROM project ${constrain};`, (error, results) => {
+    connection.query(`SELECT ${distinct} project.*, project.ProjectType_Id - 1 AS ProjectTypeId FROM project ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         res.json(results)
     })

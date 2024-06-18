@@ -20,11 +20,11 @@ public partial class AbsencesListPage : ContentPage
         viewmodel.LeaveRequests = Globals.User.GetLeaveRequests().ToObservableCollection();
         viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests;
         viewmodel.CanSubmitLeaveRequest = Globals.User.Employee.CanSubmitRequests;
+        viewmodel.CanViewReview = Globals.User.Employee.CanViewReviews;
 
-        if (Globals.User.Employee.CanEditRequests)
+        if (viewmodel.CanViewReview)
         {
             viewmodel.Reviews = Globals.User.GetReviews().ToObservableCollection();
-            viewmodel.CanViewApproval = true;
 
             foreach (Review Review in viewmodel.Reviews)
             {

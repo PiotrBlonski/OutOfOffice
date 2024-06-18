@@ -14,7 +14,7 @@ router.get('/leave', auth.authenticateToken, (req, res) => {
 
     //Default constrain
     let constrain = `WHERE Employee.login = '${req.user.name}'`
-
+    let distinct = req.userdata.Position == allowed[3] ? 'DISTINCT' : ''
     //change constrain to none if user is administrator
     if (req.userdata.Position == allowed[1])
         constrain = ''
@@ -26,7 +26,7 @@ router.get('/leave', auth.authenticateToken, (req, res) => {
         constrain = `JOIN peoplepartner ON employee.id = peoplepartner.employee_id WHERE peoplepartner.Partner_Id = '${req.userdata.Id}'`
 
     //final query including constrain
-    connection.query(`SELECT leaverequest.*, employee.Name AS Owner FROM leaverequest JOIN Employee on employee_Id = Employee.Id ${constrain};`, (error, results) => {
+    connection.query(`SELECT ${distinct} leaverequest.*, employee.Name AS Owner FROM leaverequest JOIN Employee on employee_Id = Employee.Id ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         res.json(results)
     })
@@ -138,22 +138,25 @@ router.post('/leave/remove', auth.authenticateToken, (req, res) => {
 
 //get approval requests of leave requests
 router.get('/approval', auth.authenticateToken, (req, res) => {
-    allowed = ['Administrator', 'HR Manager', 'Project Manager']
-
+    allowed = ['Administrator', 'HR Manager', 'Project Manager', 'Employee']
+    
     //do not allow users outside of list
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
     let constrain = ''
-    //project manager is limited only to records of employees involved in their project
-    if (req.userdata.Position == allowed[2])
+    let distinct = req.userdata.Position == allowed[2] ? 'DISTINCT' : ''
+    //apply constrains
+    if (req.userdata.Position == allowed[3])
+        constrain = `WHERE leaverequest.Employee_Id = ${req.userdata.Id}`
+    else if (req.userdata.Position == allowed[2])
         constrain = `JOIN projectmember ON employee.id = approvalrequest.Approver_Id JOIN project ON projectmember.project_id = project.id WHERE project.manager_id = ${req.userdata.Id}`
     //hr manager is limited to their assigned employees
     else if (req.userdata.Position == allowed[1])
         constrain = `JOIN peoplepartner ON employee.id = approvalrequest.Approver_Id WHERE peoplepartner.Partner_Id = ${req.userdata.Id}`
 
     //get data with criteria
-    connection.query(`SELECT approvalrequest.*, employee.Name AS Approver FROM approvalrequest JOIN leaverequest ON LeaveRequest_Id = leaverequest.id JOIN Employee ON approvalrequest.Approver_Id = Employee.Id ${constrain};`, (error, results) => {
+    connection.query(`SELECT ${distinct} approvalrequest.*, employee.Name AS Approver FROM approvalrequest JOIN leaverequest ON LeaveRequest_Id = leaverequest.id JOIN Employee ON approvalrequest.Approver_Id = Employee.Id ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         res.json(results)
     })
