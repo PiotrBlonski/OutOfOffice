@@ -15,7 +15,7 @@ router.get('/', auth.authenticateToken, (req, res) => {
     let constrain = ''
     //project manager is limited only to their projects
     if (req.userdata.Position == allowed[1])
-        constrain = `WHERE project.Manager_Id = '${req.userdata.Id}'`
+        constrain = `WHERE project.Manager_Id = ${req.userdata.Id}`
 
     connection.query(`SELECT project.*, project.ProjectType_Id - 1 AS ProjectTypeId FROM project ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
@@ -32,11 +32,11 @@ router.get('/assigned', auth.authenticateToken, (req, res) => {
         return res.sendStatus(401)
 
     //do not allow access to project that manager is not assigned to
-    connection.query(`SELECT * FROM project WHERE id = '${req.body.projectid}' AND Manager_Id = ${req.userdata.Id};`, (error, results) => {
+    connection.query(`SELECT * FROM project WHERE id = ${req.body.projectid} AND Manager_Id = ${req.userdata.Id};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(401)
 
-        connection.query(`SELECT employee.* FROM employee JOIN projectmember on projectmember.Employee_Id = employee.Id WHERE projectmember.Project_Id = '${req.body.projectid}';`, (error, results) => {
+        connection.query(`SELECT employee.* FROM employee JOIN projectmember on projectmember.Employee_Id = employee.Id WHERE projectmember.Project_Id = ${req.body.projectid};`, (error, results) => {
             if (error) return res.sendStatus(500)
             res.json(results)
         })
@@ -69,7 +69,7 @@ router.post('/submit', auth.authenticateToken, (req, res) => {
     manager = req.userdata.Position == allowed[0] ? req.body.manager : req.userdata.Id
 
     //add new project wit query
-    connection.query(`INSERT INTO project (Name, ProjectType_Id, StartDate, EndDate, Manager_Id, Comment, Status) VALUES ('${req.body.name}', '${req.body.projecttype}', '${req.body.startdate}', '${req.body.enddate}', '${manager}', '${req.body.comment}', 1);`, (error, results) => {
+    connection.query(`INSERT INTO project (Name, ProjectType_Id, StartDate, EndDate, Manager_Id, Comment, Status) VALUES ('${req.body.name}', '${req.body.projecttype}', '${req.body.startdate}', '${req.body.enddate}', '${manager}', '${req.body.comment}', 1);`, (error) => {
         if (error) return res.sendStatus(500)
         connection.query(`SELECT Id FROM project WHERE Name = '${req.body.name}' AND ProjectType_Id = '${req.body.projecttype}' AND StartDate = '${req.body.startdate}' AND EndDate = '${req.body.enddate}' AND Manager_Id = '${manager}' AND Comment = '${req.body.comment}' AND Status = 1;`, (error, results) => {
             if (error) return res.sendStatus(500)
@@ -90,7 +90,7 @@ router.post('/edit', auth.authenticateToken, (req, res) => {
     manager = req.userdata.Position == allowed[0] ? req.body.manager : req.userdata.Id
 
     //check if project manager is owner of project
-    connection.query(`SELECT * FROM project WHERE project.Manager_Id = '${req.userdata.Id}' AND project.Id = '${req.body.projectid}';`, (error, results) => {
+    connection.query(`SELECT * FROM project WHERE project.Manager_Id = ${req.userdata.Id} AND project.Id = ${req.body.projectid};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(400)
 
@@ -127,11 +127,11 @@ router.post('/assign', auth.authenticateToken, (req, res) => {
         return res.sendStatus(401)
 
     //check if employee is member of project already
-    connection.query(`SELECT * FROM projectmember WHERE employee_Id = '${req.body.employeeid}' AND project_Id = '${req.body.projectid}';`, (error, results) => {
+    connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (results.length > 0) return res.sendStatus(400)
 
-        connection.query(`INSERT INTO projectmember(employee_Id, project_Id) VALUES ('${req.body.employeeid}','${req.body.projectid}');`, (error) => {
+        connection.query(`INSERT INTO projectmember(employee_Id, project_Id) VALUES (${req.body.employeeid}, ${req.body.projectid});`, (error) => {
             if (error) return res.sendStatus(500)
             res.sendStatus(200)
         })
@@ -147,15 +147,15 @@ router.post('/unassign', auth.authenticateToken, (req, res) => {
         return res.sendStatus(401)
 
     //check if employee is member of project
-    connection.query(`SELECT * FROM projectmember WHERE employee_Id = '${req.body.employeeid}' AND project_Id = '${req.body.projectid}';`, (error, results) => {
+    connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (results.length == 0) return res.sendStatus(400)
         //check if project manager is owner of project
-        connection.query(`SELECT * FROM projectmember JOIN project ON project.Id = projectmember.Project_Id WHERE employee_Id = '${req.body.employeeid}' AND project_Id = '${req.body.projectid}' AND project.Manager_Id = '${req.userdata.Id}';`, (error, results) => {
+        connection.query(`SELECT * FROM projectmember JOIN project ON project.Id = projectmember.Project_Id WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid} AND project.Manager_Id = ${req.userdata.Id};`, (error, results) => {
             if (error) return res.sendStatus(500)
             if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(400)
 
-            connection.query(`DELETE FROM projectmember WHERE employee_Id = '${req.body.employeeid}' AND project_Id = '${req.body.projectid}';`, (error) => {
+            connection.query(`DELETE FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error) => {
                 if (error) return res.sendStatus(500)
                 res.sendStatus(200)
             })
