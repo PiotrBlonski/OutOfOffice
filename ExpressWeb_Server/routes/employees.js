@@ -87,17 +87,17 @@ router.post('/edit', auth.authenticateToken, (req, res) => {
         return res.sendStatus(401)
 
     constrain = `WHERE employee.Id = ${req.body.id}`
-    JOINedtable = ''
+    joinedtable = ''
 
     //set constrain for HR Manager
     if (req.userdata.Position == allowed[1]) {
         constrain = `WHERE peoplepartner.Partner_Id = ${req.userdata.Id} AND employee.Id = ${req.body.id}`
-        JOINedtable = `JOIN peoplepartner ON peoplepartner.Employee_Id = employee.Id`
+        joinedtable = `JOIN peoplepartner ON peoplepartner.Employee_Id = employee.Id`
     }
 
     //only admin can choose position
     let position = req.userdata.Position == allowed[1] ? 1 : req.body.position
-    connection.query(`UPDATE employee ${JOINedtable} SET Name = '${req.body.name}', Subdivision_Id = '${req.body.subdivision}', Position_Id = '${position}', Status = '${req.body.status}', Balance = '${req.body.balance}' ${constrain};`, (error, results) => {
+    connection.query(`UPDATE employee ${joinedtable} SET Name = '${req.body.name}', Subdivision_Id = '${req.body.subdivision}', Position_Id = '${position}', Status = '${req.body.status}', Balance = '${req.body.balance}' ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (results.length == 0) res.sendStatus(401)
 
