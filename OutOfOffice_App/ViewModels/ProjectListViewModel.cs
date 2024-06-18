@@ -29,6 +29,9 @@ namespace OutOfOffice.ViewModels
         [ObservableProperty]
         bool descending;
 
+        [ObservableProperty]
+        bool canEditProjects;
+
         [RelayCommand]
         async Task CreateProject()
         {

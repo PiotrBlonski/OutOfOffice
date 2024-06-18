@@ -21,7 +21,7 @@ public partial class ProjectPage : ContentPage
 
     private void ManagerPicker_Loaded(object sender, EventArgs e)
     {
-        viewModel.CanChangeDetails = true;
+        viewModel.CanChangeDetails = Globals.User.Employee.CanEditProjects;
         viewModel.CanChangeManager = Globals.User.Employee.CanChangeManager;
         viewModel.Editing = viewModel.Project.Manager_Id != 0;
         viewModel.CanRemoveProject = Globals.User.Employee.CanRemoveProjects;

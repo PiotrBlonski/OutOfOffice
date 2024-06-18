@@ -30,8 +30,9 @@ namespace OutOfOffice.Models
         public bool CanSubmitRequests => Position == "Employee";
         public bool CanViewRequests => Position == "HR Manager" || Position == "Project Manager" || Position == "Administrator" || Position == "Employee";
         public bool CanEditRequests => Position == "HR Manager" || Position == "Project Manager";
+        public bool CanViewReviews => Position == "HR Manager" || Position == "Project Manager" || Position == "Administrator" || Position == "Employee";
         public bool CanRemoveRequests => Position == "Administrator";
-        public bool CanViewProjects => Position == "Project Manager" || Position == "Administrator";
+        public bool CanViewProjects => Position == "HR Manager" || Position == "Project Manager" || Position == "Administrator" || Position == "Employee";
         public bool CanEditProjects => Position == "Project Manager" || Position == "Administrator";
         public bool CanRemoveProjects => Position == "Administrator";
         public bool CanChangeManager => Position == "Administrator";

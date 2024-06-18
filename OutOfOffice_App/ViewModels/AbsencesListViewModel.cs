@@ -38,6 +38,9 @@ namespace OutOfOffice.ViewModels
         [ObservableProperty]
         bool canSubmitLeaveRequest;
 
+        [ObservableProperty]
+        bool canViewReview;
+
         [RelayCommand]
         async Task RequestLeave()
         {

@@ -135,9 +135,10 @@
                             BackgroundColor="{StaticResource Quaternary}"
                             Text="Change List"
                             FontSize="20"
-                            IsEnabled="{Binding CanChangeDetails}"
+                            IsVisible="{Binding CanChangeDetails}"
                             TextColor="{StaticResource Secondary}"
                             Command="{Binding ChangeAssignedEmployeesCommand}"/>
+
                 </Grid>
             </Frame>
             <Button Text="Submit"
