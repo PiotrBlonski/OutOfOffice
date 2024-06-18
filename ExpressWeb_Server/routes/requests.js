@@ -88,24 +88,28 @@ router.post('/leave/changestatus', auth.authenticateToken, (req, res) => {
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
-    let constrain = ''
+    let constrain = `WHERE leaverequest.Id = ${req.body.leaveid}`
     //project manager can only change status of employees assigned to their projects
     if (req.userdata.Position == allowed[2])
         constrain = `JOIN projectmember ON employee.id = projectmember.employee_id JOIN project ON projectmember.project_id = project.id WHERE project.manager_id = '${req.userdata.Id}' AND leaverequest.Id = '${req.body.leaveid}'`
     //hr manager can only changed their employees status
     else if (req.userdata.Position == allowed[1])
-        constrain = `JOIN peoplepartner ON employee.id = peoplepartner.employee_id WHERE peoplepartner.Partner_Id = '${req.userdata.Id}'`
+        constrain = `JOIN peoplepartner ON employee.id = peoplepartner.employee_id WHERE peoplepartner.Partner_Id = '${req.userdata.Id}' AND leaverequest.Id = ${req.body.leaveid}`
 
     //check if user can edit the record in case they shouldn not be able to access this record
     connection.query(`SELECT * FROM leaverequest join reason on leaverequest.Reason_Id = reason.Id join Employee on employee_Id = Employee.Id ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (results.length < 1) return res.sendStatus(401) //if criteria are not met do not go further
 
+        var startdate = new Date(results[0].StartDate)
+        var enddate = new Date(results[0].EndDate)
         //finally change status of leave request either by approving or denying
         connection.query(`INSERT INTO approvalrequest (Approver_Id, LeaveRequest_Id, Status, Comment) VALUES ('${req.userdata.Id}', '${req.body.leaveid}', '${req.body.status}', '${req.body.comment}');`, (error) => {
             if (error) return res.sendStatus(500)
+            
+            let adjustment = req.body.status == 1 ? (enddate.getTime() - startdate.getTime()) / (1000 * 3600 * 24) : 0;
             //update status of leave request to reviewed and update employee balance
-            connection.query(`UPDATE leaverequest, employee SET leaverequest.Status = 2, employee.Balance = employee.Balance - 24 WHERE leaverequest.Id = '${req.body.leaveid}' AND employee.Id = leaverequest.Employee_Id;`, (error) => {
+            connection.query(`UPDATE leaverequest, employee SET leaverequest.Status = 2, employee.Balance = employee.Balance - ${adjustment} WHERE leaverequest.Id = '${req.body.leaveid}' AND employee.Id = leaverequest.Employee_Id;`, (error) => {
                 if (error) return res.sendStatus(500)
                 res.sendStatus(200)
             })
