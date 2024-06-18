@@ -158,6 +158,7 @@
                     CornerRadius="0"
                     FontSize="20"
                     HeightRequest="70"
+                    IsVisible="{Binding CanRemoveProject}"
                     Command="{Binding RemoveProjectCommand}"/>
             <Button Text="Go Back"
                     CornerRadius="0"

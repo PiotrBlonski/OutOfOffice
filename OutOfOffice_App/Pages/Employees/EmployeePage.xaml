@@ -15,6 +15,39 @@
         <VerticalStackLayout Spacing="10"
                              Margin="15"
                              Loaded="VerticalStackLayout_Loaded">
+            <Label Text="Avatar:"
+                   FontSize="20"/>
+            <Frame WidthRequest="500"
+                   HorizontalOptions="Start">
+                <Grid ColumnDefinitions="*,*">
+                    <Frame HeightRequest="200"
+                           WidthRequest="200"
+                           Padding="0"
+                           BackgroundColor="{StaticResource Secondary}">
+                        <Frame BackgroundColor="{StaticResource Secondary}"
+                               Padding="0"
+                               HeightRequest="150"
+                               WidthRequest="150">
+                            <Image Source="{Binding Employee.Avatar}"
+                                   Aspect="AspectFill"/>
+                        </Frame>
+                    </Frame>
+                    <Button Grid.Column="1"
+                            Margin="50"
+                            IsEnabled="{Binding CanChangeDetails}"
+                            Text="Upload"
+                            Command="{Binding UploadAvatarCommand}"
+                            FontSize="20">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button"
+                                         Binding="{Binding CanChangeDetails}"
+                                         Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </Frame>
             <Label Text="Name:"
                    FontSize="20"/>
             <Frame>

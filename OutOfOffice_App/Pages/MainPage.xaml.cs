@@ -18,7 +18,7 @@ namespace OutOfOffice.Pages
             viewModel.CanViewEmployees = viewModel.Employee.CanViewEmployees;
             viewModel.CanViewProjects = viewModel.Employee.CanViewProjects;
             viewModel.CanViewAbsences = true;
-            viewModel.Avatar = "http://localhost:3000/employees/avatar/" + viewModel.Employee.Id;
+            viewModel.UpdateProfile();
 
             if (FindByName("LoadingCover") is Grid Cover)
                 Cover.IsVisible = false;

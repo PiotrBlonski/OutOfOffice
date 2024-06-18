@@ -9,7 +9,7 @@ namespace OutOfOffice.Web
         public Employee Employee { get; set; }
         public User()
         {
-            UserClient = new("http://192.168.1.40:3000");
+            UserClient = new(Globals.Address);
             Employee = new();
         }
 
@@ -266,6 +266,11 @@ namespace OutOfOffice.Web
             };
 
             return UserClient.SendRequest(HttpMethod.Post, "/projects/assign", true, Data);
+        }
+
+        public HttpResponseMessage UploadAvatar(string FilePath, int Id)
+        {
+            return UserClient.SendRequest(HttpMethod.Post, "/employees/avatar/" + Id.ToString(), true, null, FilePath);
         }
     }
 }
