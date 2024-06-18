@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.AbsencePage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             xmlns:model="clr-namespace:OutOfOffice.Models"
+             x:DataType="viewmodel:AbsenceViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Spacing="10"
+                             Margin="15">
+            <Label Text="Employee:"
+                   FontSize="20"
+                   IsVisible="{Binding CanChangeStatus}"/>
+            <Frame IsVisible="{Binding CanChangeStatus}">
+                <Entry Text="{Binding LeaveRequest.Name}"
+                       IsEnabled="False"
+                       IsReadOnly="True"
+                       FontSize="25"/>
+            </Frame>
+            <Label Text="Start Date:"
+                   FontSize="20"/>
+            <Frame>
+                <DatePicker Date="{Binding LeaveRequest.StartDate, Mode=TwoWay}"
+                            x:Name="StartDatePicker"
+                            FontSize="25"
+                            IsEnabled="{Binding CanChangeDetails}">
+                </DatePicker>
+            </Frame>
+            <Label Text="End Date:"
+                   FontSize="20"/>
+            <Frame>
+                <DatePicker Date="{Binding LeaveRequest.EndDate, Mode=TwoWay}"
+                            x:Name="EndDatePicker"
+                            FontSize="25"
+                            IsEnabled="{Binding CanChangeDetails}">
+                </DatePicker>
+             </Frame>
+             <Label Text="Reason:"
+                    FontSize="20"/>
+            <Frame>
+                <Picker SelectedIndex="{Binding LeaveRequest.ReasonId, Mode=TwoWay}"
+                        ItemsSource="{Binding Reasons}"
+                        Loaded="Picker_Loaded"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        FontSize="25">
+                </Picker>
+            </Frame>
+            <Label Text="Comment:"
+                   FontSize="20"/>
+            <Frame>
+                <Editor Text="{Binding LeaveRequest.Comment, Mode=TwoWay}"
+                        HeightRequest="150"
+                        FontSize="25"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        IsReadOnly="{Binding CanChangeDetails, Converter={StaticResource InvertedBoolConverter}}">
+                    <Editor.Triggers>
+                        <DataTrigger TargetType="Editor"
+                                     Binding="{Binding LeaveRequest.Comment}"
+                                     Value="null">
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                    </Editor.Triggers>
+                </Editor>
+            </Frame>
+            <Button Text="Submit"
+                    CornerRadius="0"
+                    HeightRequest="70"
+                    FontSize="20"
+                    IsVisible="{Binding CanChangeDetails}"
+                    Command="{Binding SubmitCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding Editing}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Edit"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Text="Cancel Request"
+                    CornerRadius="0"
+                    HeightRequest="70"
+                    FontSize="20"
+                    IsVisible="False"
+                    Command="{Binding CancelRequestCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding CanChangeDetails}"
+                                 Value="True">
+                        <Setter Property="IsVisible"
+                                Value="True"/>
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding LeaveRequest.Status}"
+                                 Value="0">
+                        <Setter Property="IsVisible" Value="False"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Grid ColumnDefinitions="*,*"
+                  RowDefinitions="Auto,*,*"
+                  Margin="0,25,0,0"
+                  IsVisible="{Binding CanChangeStatus}"
+                  RowSpacing="10"
+                  ColumnSpacing="15">
+                <Label Text="Status Comment:"
+                       FontSize="20"/>
+                <Frame Grid.ColumnSpan="2"
+                       Padding="15"
+                       Grid.Row="1"
+                       BackgroundColor="{StaticResource Tertiary}">
+                    <Editor HeightRequest="150"
+                            FontSize="25"
+                            BackgroundColor="Transparent"
+                            Text="{Binding StatusComment}"/>
+                </Frame>
+                <Button Text="Approve"
+                        Grid.Row="2"
+                        CornerRadius="0"
+                        FontSize="20"
+                        HeightRequest="70"
+                        Command="{Binding ApproveRequestCommand}"/>
+                <Button Text="Deny"
+                        Grid.Row="2"
+                        CornerRadius="0"
+                        Grid.Column="1"
+                        FontSize="20"
+                        HeightRequest="70"
+                        Command="{Binding DenyRequestCommand}"/>
+            </Grid>
+            <Button Text="Remove"
+                    CornerRadius="0"
+                    FontSize="20"
+                    HeightRequest="70"
+                    IsVisible="{Binding CanRemoveRequest}"
+                    Command="{Binding RemoveRequestCommand}"/>
+            <Button Text="Go Back"
+                    CornerRadius="0"
+                    FontSize="20"
+                    HeightRequest="100"
+                    Clicked="BackButton_Clicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

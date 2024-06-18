@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.ProjectPage"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:model="clr-namespace:OutOfOffice.Models"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             x:DataType="viewmodel:ProjectViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Margin="15"
+                             Spacing="10">
+            <Label Text="Name:"
+                   FontSize="20"/>
+            <Frame>
+                <Entry Text="{Binding Project.Name, Mode=TwoWay}"
+                        FontSize="25"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        IsReadOnly="{Binding CanChangeDetails, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            </Frame>
+            <Label Text="Manager:"
+                   FontSize="20"
+                   IsVisible="{Binding CanChangeManager}"/>
+            <Frame IsVisible="{Binding CanChangeManager}">
+                <Picker SelectedIndex="{Binding SelectedManager}"
+                        x:Name="ManagerPicker"
+                        Loaded="ManagerPicker_Loaded"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        FontSize="25"/>
+            </Frame>
+            <Label Text="Type:"
+                   FontSize="20"/>
+            <Frame>
+                <Picker SelectedIndex="{Binding Project.ProjectTypeId}"
+                        x:Name="TypePicker"
+                        ItemsSource="{Binding ProjectTypes}"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        FontSize="25"/>
+            </Frame>
+            <Label Text="Start Date:"
+                   FontSize="20"/>
+            <Frame>
+                <DatePicker Date="{Binding Project.StartDate, Mode=TwoWay}"
+                            x:Name="StartDatePicker"
+                            FontSize="25"
+                            IsEnabled="{Binding CanChangeDetails}">
+                </DatePicker>
+            </Frame>
+            <Label Text="End Date:"
+                   FontSize="20"/>
+            <Frame>
+                <DatePicker Date="{Binding Project.EndDate, Mode=TwoWay}"
+                            x:Name="EndDatePicker"
+                            FontSize="25"
+                            IsEnabled="{Binding CanChangeDetails}">
+                </DatePicker>
+            </Frame>
+            <Label Text="Comment:"
+                   FontSize="20"/>
+            <Frame>
+                <Editor Text="{Binding Project.Comment, Mode=TwoWay}"
+                        HeightRequest="150"
+                        FontSize="25"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        IsReadOnly="{Binding CanChangeDetails, Converter={StaticResource InvertedBoolConverter}}">
+                    <Editor.Triggers>
+                        <DataTrigger TargetType="Editor"
+                                     Binding="{Binding Project.Comment}"
+                                     Value="null">
+                            <Setter Property="Text" Value=""/>
+                        </DataTrigger>
+                    </Editor.Triggers>
+                </Editor>
+            </Frame>
+            <Label Text="Status:"
+                   FontSize="20"
+                   IsVisible="{Binding Editing}"/>
+            <Frame IsVisible="{Binding Editing}">
+                <Picker SelectedIndex="{Binding Project.ClientStatus}"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        ItemsSource="{Binding StatusList}"
+                        FontSize="25"/>
+            </Frame>
+            <Label Text="Assigned Employees:"
+                   FontSize="20"/>
+            <Frame HeightRequest="600"
+                   Padding="10,0,10,10">
+                <Grid RowDefinitions="*,.2*"
+                      RowSpacing="15">
+                     <CollectionView ItemsSource="{Binding AssignedEmployees}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical"
+                                               ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                             <DataTemplate x:DataType="{x:Type model:Employee}">
+                                <Frame HeightRequest="150"
+                                       BackgroundColor="{StaticResource Secondary}"
+                                       Padding="25">
+                                    <Grid ColumnDefinitions="Auto, *, Auto"
+                                          RowDefinitions="Auto,Auto,Auto,*">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="30"
+                                               TextColor="{StaticResource Quaternary}"/>
+                                        <Label Text="{Binding Position}"
+                                               Grid.Row="1"
+                                               FontSize="20"
+                                               TextColor="{StaticResource Quaternary}"/>
+                                        <Label Text="{Binding Subdivision}"
+                                               Grid.Row="2"
+                                               FontSize="20"
+                                               TextColor="{StaticResource Quaternary}"/>
+                                        <Button Grid.Column="2"
+                                                Grid.RowSpan="4"
+                                                WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                                                HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                                                Text="×"
+                                                TextColor="{StaticResource Primary}"
+                                                FontSize="50"
+                                                FontAttributes="Bold"
+                                                BackgroundColor="{StaticResource Quaternary}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ProjectViewModel}}, Path=RemoveEmployeeCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Frame>
+                             </DataTemplate>
+                         </CollectionView.ItemTemplate>
+                     </CollectionView>
+                    <Button Grid.Row="1"
+                            BackgroundColor="{StaticResource Quaternary}"
+                            Text="Change List"
+                            FontSize="20"
+                            IsEnabled="{Binding CanChangeDetails}"
+                            TextColor="{StaticResource Secondary}"
+                            Command="{Binding ChangeAssignedEmployeesCommand}"/>
+                </Grid>
+            </Frame>
+            <Button Text="Submit"
+                    CornerRadius="0"
+                    HeightRequest="70"
+                    FontSize="20"
+                    IsVisible="{Binding CanChangeDetails}"
+                    Command="{Binding SubmitCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding Editing}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Edit"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Text="Remove"
+                    CornerRadius="0"
+                    FontSize="20"
+                    HeightRequest="70"
+                    Command="{Binding RemoveProjectCommand}"/>
+            <Button Text="Go Back"
+                    CornerRadius="0"
+                    FontSize="20"
+                    HeightRequest="100"
+                    Clicked="BackButton_Clicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.EmployeePage"
+             xmlns:model="clr-namespace:OutOfOffice.Models"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="viewmodel:EmployeeViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Spacing="10"
+                             Margin="15"
+                             Loaded="VerticalStackLayout_Loaded">
+            <Label Text="Name:"
+                   FontSize="20"/>
+            <Frame>
+                <Entry Text="{Binding Employee.Name}"
+                       IsEnabled="{Binding CanChangeDetails}"
+                       FontSize="25"/>
+            </Frame>
+            <Label Text="Position:"
+                   FontSize="20"
+                   IsVisible="{Binding CanChangePosition}"/>
+            <Frame IsVisible="{Binding CanChangePosition}">
+                <Picker FontSize="25"
+                        SelectedIndex="{Binding Employee.PositionId, Mode=TwoWay}"
+                        ItemsSource="{Binding PositionList}"
+                        IsEnabled="{Binding CanChangeDetails}">
+                </Picker>
+            </Frame>
+            <Label Text="Subdivision:"
+                   FontSize="20"/>
+            <Frame>
+                <Picker FontSize="25"
+                        SelectedIndex="{Binding Employee.SubdivisionId, Mode=TwoWay}"
+                        ItemsSource="{Binding SubdivisionList}"
+                        IsEnabled="{Binding CanChangeDetails}">
+                </Picker>
+            </Frame>
+            <Label Text="Status:"
+                FontSize="20"/>
+            <Frame>
+                <Picker SelectedIndex="{Binding Employee.Status, Mode=TwoWay}"
+                        ItemsSource="{Binding StatusList}"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        x:Name="StatusPicker"
+                        FontSize="25">
+                </Picker>
+            </Frame>
+            <Label Text="Partner:"
+                   FontSize="20"
+                   IsVisible="{Binding CanChangePartner}"/>
+            <Frame IsVisible="{Binding CanChangePartner}">
+                <Picker SelectedIndex="{Binding ChoosenPartner, Mode=TwoWay}"
+                        ItemsSource="{Binding PartnerList}"
+                        IsEnabled="{Binding CanChangeDetails}"
+                        FontSize="25">
+                </Picker>
+            </Frame>
+            <Label Text="Balance:"
+                   FontSize="20"/>
+            <Frame>
+                <Entry Text="{Binding Employee.Balance}"
+                       IsEnabled="{Binding CanChangeDetails}"
+                       FontSize="25"/>
+            </Frame>
+            <Grid RowDefinitions="*,*"
+                  ColumnDefinitions="*,*"
+                  RowSpacing="10"
+                  ColumnSpacing="15"
+                  IsVisible="{Binding Editing, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="Login:"
+                       FontSize="20"/>
+                <Frame Grid.Row="1">
+                    <Entry Text="{Binding Login}"
+                           IsEnabled="{Binding CanChangeDetails}"
+                           FontSize="25"/>
+                </Frame>
+                <Label Text="Password:"
+                       FontSize="20"
+                       Grid.Column="1"/>
+                <Frame Grid.Column="1"
+                       Grid.Row="1">
+                    <Entry Text="{Binding Password}"
+                           IsEnabled="{Binding CanChangeDetails}"
+                           FontSize="25"/>
+                </Frame>
+            </Grid>
+            <Button Text="Create User"
+                    CornerRadius="0"
+                    HeightRequest="70"
+                    FontSize="20"
+                    IsVisible="{Binding CanChangeDetails}"
+                    Command="{Binding SubmitCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding Editing}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Edit User"/>
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            <Button Text="Go Back"
+                    CornerRadius="0"
+                    FontSize="20"
+                    HeightRequest="100"
+                    Clicked="BackButton_Clicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.AbsencesListPage"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             xmlns:model="clr-namespace:OutOfOffice.Models"
+             x:DataType="viewmodel:AbsencesListViewModel">
+    <Grid RowDefinitions="Auto,*"
+          BackgroundColor="{StaticResource Quaternary}">
+        <Grid BackgroundColor="{StaticResource Primary}"
+              ColumnDefinitions="Auto,*,Auto"
+              ColumnSpacing="15"
+              HeightRequest="100"
+              Padding="15">
+            <Grid ColumnDefinitions="Auto, Auto"
+                  ColumnSpacing="15">
+                <Button WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        Text="«"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        FontSize="30"
+                        Padding="0"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource Secondary}"
+                        Clicked="BackButton_Clicked"
+                        CornerRadius="10"/>
+                <Button WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        Text="+"
+                        Grid.Column="1"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        FontSize="30"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource Secondary}"
+                        Command="{Binding RequestLeaveCommand}"
+                        CornerRadius="10"
+                        IsVisible="{Binding CanSubmitLeaveRequest}">
+                </Button>
+            </Grid>
+            <Grid ColumnDefinitions="*, Auto"
+                  ColumnSpacing="15"
+                  Grid.Column="1"
+                  Margin="0,10">
+                <Frame Padding="15,0"
+                       BackgroundColor="{StaticResource Quaternary}">
+                    <Entry FontSize="20"
+                           BackgroundColor="Transparent"
+                           TextChanged="ApplyFilters"
+                           Placeholder="Type your filters here, for example: name=Peter"
+                           PlaceholderColor="{StaticResource Secondary}"/>
+                </Frame>
+                <Frame Grid.Column="1"
+                       WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                       BackgroundColor="{StaticResource Secondary}"/>
+            </Grid>
+            <Grid Grid.Column="2"
+                  ColumnSpacing="15"
+                  ColumnDefinitions="Auto,Auto,Auto">
+                <Label Text="Sort by:"
+                       TextColor="{StaticResource Quaternary}"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Start"
+                       FontSize="30"/>
+                <Frame BackgroundColor="{StaticResource Tertiary}"
+                       WidthRequest="220"
+                       HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                       Padding="0"
+                       Grid.Column="1">
+                    <Picker BackgroundColor="Transparent"
+                            ItemsSource="{Binding SortList}"
+                            SelectedItem="{Binding SelectedSort}"
+                            SelectedIndex="{Binding SelectedSortIndex}"
+                            FontSize="20"
+                            HorizontalTextAlignment="Center"
+                            SelectedIndexChanged="SortPicker_SelectedIndexChanged"/>
+                </Frame>
+                <Button Grid.Column="2"
+                        HorizontalOptions="Start"
+                        Padding="0"
+                        BackgroundColor="{StaticResource Tertiary}"
+                        WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                        TextColor="{StaticResource Primary}"
+                        Text="▼"
+                        FontAttributes="Bold"
+                        Clicked="OrderButtonClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button"
+                                        Binding="{Binding Descending}"
+                                        Value="True">
+                            <Setter Property="Text" Value="▲"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </Grid>
+        <CollectionView ItemsSource="{Binding SortedLeaveRequests}"
+                        Loaded="CollectionView_Loaded"
+                        Grid.Row="1"
+                        VerticalScrollBarVisibility="Always">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" 
+                                   ItemSpacing="15"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.Header>
+                <Grid HeightRequest="15"/>
+            </CollectionView.Header>
+            <CollectionView.Footer>
+                <Grid HeightRequest="15"/>
+            </CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type model:LeaveRequest}">
+                    <Grid Padding="25,0"
+                          ColumnSpacing="15">
+                        <Frame HeightRequest="200"
+                               BackgroundColor="{StaticResource Secondary}">
+                            <Grid RowDefinitions="*,*,*"
+                                  ColumnDefinitions="*,*"
+                                  ColumnSpacing="50"
+                                  Padding="25,15">
+                                <Label Text="{Binding Name}"
+                                       TextColor="{StaticResource Quaternary}"
+                                       FontSize="30"
+                                       VerticalOptions="Center"/>
+                                <Label Grid.Row="1"
+                                       TextColor="{StaticResource Quaternary}"
+                                       Text="{Binding Reason}"
+                                       FontAttributes="Bold"
+                                       FontSize="20"
+                                       VerticalOptions="Center"/>
+                                <Label Grid.Row="2"
+                                       TextColor="{StaticResource Tertiary}"
+                                       Text="{Binding StatusString}"
+                                       FontAttributes="Bold"
+                                       FontSize="25"
+                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding StartDateOnly}"
+                                       TextColor="{StaticResource Quaternary}"
+                                       FontSize="30"
+                                       Grid.Row="0"
+                                       Grid.Column="1"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="End"/>
+                                <Label Text="{Binding EndDateOnly}"
+                                       TextColor="{StaticResource Quaternary}"
+                                       FontSize="30"
+                                       Grid.Row="1"
+                                       Grid.Column="1"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="End"/>
+                                <Frame Grid.Column="1"
+                                       Grid.Row="2"
+                                       Padding="15,0"
+                                       IsVisible="False"
+                                       BackgroundColor="{StaticResource Primary}">
+                                    <Grid ColumnDefinitions="Auto,Auto,Auto"
+                                          ColumnSpacing="5"
+                                          HorizontalOptions="CenterAndExpand">
+                                        <Label Text="{Binding Review.StatusString}"
+                                               TextColor="{StaticResource Quaternary}"
+                                               VerticalOptions="Center"
+                                               FontAttributes="Bold"
+                                               FontSize="15"/>
+                                        <Label Text="by"
+                                               TextColor="{StaticResource Quaternary}"
+                                               VerticalOptions="Center"
+                                               Grid.Column="1"
+                                               FontSize="15"/>
+                                        <Label Text="{Binding Review.Approver}"
+                                               TextColor="{StaticResource Quaternary}"
+                                               VerticalOptions="Center"
+                                               Grid.Column="2"
+                                               FontSize="15"/>
+                                    </Grid>
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame"
+                                                     Binding="{Binding Status}"
+                                                     Value="2">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Frame"
+                                                     Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AbsencesListViewModel}}, Path=CanViewApproval}" 
+                                                     Value="False">
+                                            <Setter Property="IsVisible" Value="False"/>
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AbsencesListViewModel}}, Path=OpenApprovalCommand}" 
+                                                              CommandParameter="{Binding Review}"/>
+                                    </Frame.GestureRecognizers>
+                                </Frame>
+                            </Grid>
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AbsencesListViewModel}}, Path=OpenLeaveCommand}" 
+                                                      CommandParameter="{Binding .}"/>
+                            </Frame.GestureRecognizers>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

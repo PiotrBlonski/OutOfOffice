@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.LoginPage"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             x:DataType="viewmodel:LoginViewModel">
+    <Grid ColumnDefinitions=".33*,*,.33*"
+          BackgroundColor="{StaticResource Quaternary}">
+        <VerticalStackLayout VerticalOptions="Center"
+                             Spacing="10"
+                             Grid.Column="1">
+            <Label Text="Login:"/>
+            <Frame>
+                <Entry Text="{Binding Login}"/>
+            </Frame>
+            <Label Text="Password:"/>
+            <Frame>
+                <Entry Text="{Binding Password}"
+                       IsPassword="True"/>
+            </Frame>
+            <Label Text="{Binding Message}"
+                   TextColor="PaleVioletRed"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   FontSize="25"/>
+            <Button Command="{Binding LogInCommand}"
+                    Text="Log In"
+                    Margin="0,50,0,0"
+                    HeightRequest="100"
+                    FontSize="25"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OutOfOffice.Pages.MainPage"
+             xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
+             x:DataType="viewmodel:MainViewModel">
+    <Grid>
+        <Grid RowDefinitions=".3*, *"
+              BackgroundColor="{StaticResource Quaternary}"
+              Loaded="Grid_Loaded">
+            <Grid BackgroundColor="{StaticResource Tertiary}">
+                <Grid RowDefinitions="*,*,*"
+                      ColumnDefinitions="Auto,*"
+                      Grid.Column="1"
+                      ColumnSpacing="35"
+                      Margin="15">
+                    <Frame Grid.RowSpan="3"
+                           HorizontalOptions="Start"
+                           WidthRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                           HeightRequest="{Binding Height, Source={RelativeSource AncestorType={x:Type Grid}}}"
+                           BackgroundColor="{StaticResource Primary}"
+                           Padding="0">
+                        <Image Source="{Binding Avatar}" 
+                                Aspect="AspectFill"/>
+                    </Frame>
+                    <Label Text="{Binding Employee.Name}"
+                           VerticalOptions="End"
+                           Grid.Column="1"
+                           FontSize="35"
+                           FontAttributes="Bold"/>
+                    <Label Text="{Binding Employee.Position}"
+                           Grid.Column="1"
+                           Grid.Row="1"
+                           VerticalOptions="Center"
+                           FontSize="25"/>
+                    <Label Text="{Binding Employee.Subdivision}"
+                           Grid.Column="1"
+                           VerticalOptions="Start"
+                           Grid.Row="2"
+                           FontSize="20"/>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1"
+                  RowDefinitions="Auto,Auto,Auto"
+                  ColumnDefinitions=".3*,*,.3*"
+                  RowSpacing="15"
+                  Padding="15,15">
+                <Button Text="Absence Notices"
+                        FontSize="30"
+                        IsVisible="{Binding CanViewAbsences}"
+                        HeightRequest="100"
+                        Clicked="OpenAbsences"
+                        CornerRadius="5"
+                        Grid.Column="1"/>
+                <Button Text="Employees"
+                        IsVisible="{Binding CanViewEmployees}"
+                        HeightRequest="100"
+                        Clicked="OpenEmployees"
+                        FontSize="30"
+                        Grid.Row="1"
+                        CornerRadius="5"
+                        Grid.Column="1"/>
+                <Button Text="Projects"
+                        IsVisible="{Binding CanViewProjects}"
+                        HeightRequest="100"
+                        FontSize="30"
+                        Clicked="OpenProjects"
+                        Grid.Row="2"
+                        CornerRadius="5"
+                        Grid.Column="1"/>
+            </Grid>
+        </Grid>
+        <Grid BackgroundColor="{StaticResource Quaternary}"
+              x:Name="LoadingCover">
+            <ActivityIndicator IsRunning="true"
+                               HeightRequest="100"
+                               WidthRequest="100"/>
+        </Grid>
+    </Grid>
+</ContentPage>
