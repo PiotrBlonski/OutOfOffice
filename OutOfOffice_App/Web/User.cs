@@ -1,5 +1,6 @@
 ﻿using OutOfOffice.Models;
 using System.Text.Json;
+using Permissions = OutOfOffice.Models.Permissions;
 
 namespace OutOfOffice.Web
 {
@@ -7,6 +8,7 @@ namespace OutOfOffice.Web
     {
         private readonly Client UserClient;
         public Employee Employee { get; set; }
+        public Permissions PermissionList { get; set; }
         public User()
         {
             UserClient = new(Globals.Address);
@@ -17,8 +19,14 @@ namespace OutOfOffice.Web
         {
             HttpResponseMessage Response = UserClient.SetToken(Login, Password);
 
-            if (GetUserData() is Employee Employee && Response.IsSuccessStatusCode)
-                this.Employee = Employee;
+            if (Response.IsSuccessStatusCode)
+            {
+                if (GetUserData() is Employee Employee)
+                    this.Employee = Employee;
+
+                if (GetUserPermissions() is Permissions PermissionList)
+                    this.PermissionList = PermissionList;
+            }
 
             return Response;
         }
@@ -27,6 +35,12 @@ namespace OutOfOffice.Web
         {
             HttpResponseMessage Response = UserClient.SendRequest(HttpMethod.Get, "/employees/me", true);
             return Response.IsSuccessStatusCode && Client.GetData<Employee>(Response) is Employee Employee ? Employee : new();
+        }
+
+        public Models.Permissions GetUserPermissions()
+        {
+            HttpResponseMessage Response = UserClient.SendRequest(HttpMethod.Get, "/user/permissions", true);
+            return Response.IsSuccessStatusCode && Client.GetData<Permissions>(Response) is Permissions PermissionList ? PermissionList : new();
         }
 
         public List<LeaveRequest> GetLeaveRequests()
@@ -192,10 +206,10 @@ namespace OutOfOffice.Web
                 { "subdivision", Employee.Subdivision_Id.ToString()},
                 { "status", (Employee.Status + 1).ToString() },
                 { "balance", Employee.Balance.ToString() },
-                { "partner", this.Employee.CanEditPartner ? Employee.Partner_Id.ToString() : this.Employee.Id.ToString() }
+                { "partner", PermissionList.CanEditPartner ? Employee.Partner_Id.ToString() : this.Employee.Id.ToString() }
             };
 
-            if (this.Employee.CanChangePosition)
+            if (PermissionList.CanChangePosition)
                 Data.Add("position", Employee.Position_Id.ToString());
 
             return UserClient.SendRequest(HttpMethod.Post, "/employees/edit", true, Data);
@@ -213,7 +227,7 @@ namespace OutOfOffice.Web
                 { "password", Password },
             };
 
-            if (this.Employee.CanChangePosition)
+            if (PermissionList.CanChangePosition)
                 Data.Add("position", Employee.Position_Id.ToString());
 
             if (Employee.Partner_Id > 0)

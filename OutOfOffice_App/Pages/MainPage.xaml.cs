@@ -15,8 +15,8 @@ namespace OutOfOffice.Pages
         private void Grid_Loaded(object sender, EventArgs e)
         {
             viewModel.Employee = Globals.User.Employee;
-            viewModel.CanViewEmployees = viewModel.Employee.CanViewEmployees;
-            viewModel.CanViewProjects = viewModel.Employee.CanViewProjects;
+            viewModel.CanViewEmployees = Globals.User.PermissionList.CanViewEmployees;
+            viewModel.CanViewProjects = Globals.User.PermissionList.CanViewProjects;
             viewModel.CanViewAbsences = true;
             viewModel.UpdateProfile();
 
