@@ -42,6 +42,7 @@ public partial class AbsencesListPage : ContentPage
             }
         }
 
+        ApplyFilters(FindByName("RequestFilter"), null);
         UpdateSort();
     }
 
@@ -59,11 +60,16 @@ public partial class AbsencesListPage : ContentPage
         string[] TranslatedSort = ["Status", "Approver"];
 
         if (Reviewed)
+        {
             SelectedSort = TranslatedSort[viewmodel.SelectedSortIndex - 6];
+            viewmodel.FilteredLeaveRequests = viewmodel.FilteredLeaveRequests.Where(r => r.Review != null).ToObservableCollection();
+        }
+
+        if (SelectedSort == "ReviewStatus")
+            SelectedSort = "Status";
 
         viewmodel.SortedLeaveRequests = viewmodel.FilteredLeaveRequests
-            .OrderByDescending(l => Reviewed && l.Review == null)
-            .ThenBy(l => Reviewed ? l.Review?.GetType().GetProperty(SelectedSort)?.GetValue(l.Review) : l.GetType().GetProperty(SelectedSort)?.GetValue(l))
+            .OrderBy(l => Reviewed ? l.Review?.GetType().GetProperty(SelectedSort)?.GetValue(l.Review) : l.GetType().GetProperty(SelectedSort)?.GetValue(l))
             .ToObservableCollection();
 
         if (viewmodel.Descending)
@@ -85,7 +91,7 @@ public partial class AbsencesListPage : ContentPage
     {
         string[] Filters = [];
 
-        if (sender is Entry FilterEntry)
+        if (sender is Entry FilterEntry && FilterEntry.Text is string)
             Filters = FilterEntry.Text.Split(",");
 
         Dictionary<string, string> FilterDictionary = [];

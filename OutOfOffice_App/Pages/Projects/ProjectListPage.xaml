@@ -46,6 +46,7 @@
                     <Entry FontSize="20"
                            BackgroundColor="Transparent"
                            TextChanged="ApplyFilters"
+                           x:Name="ProjectFilter"
                            Placeholder="Type your filters here, for example: status=Ongoing"
                            PlaceholderColor="{StaticResource Secondary}"/>
                 </Frame>

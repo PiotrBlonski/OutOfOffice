@@ -37,6 +37,8 @@ public partial class EmployeeListPage : ContentPage
         }
 
         viewmodel.FilteredEmployees = viewmodel.Employees;
+
+        ApplyFilters(FindByName("FilterEntry"), null);
         UpdateSort();
     }
     private async void BackButton_Clicked(object sender, EventArgs e)
@@ -74,7 +76,7 @@ public partial class EmployeeListPage : ContentPage
     {
         string[] Filters = [];
 
-        if (sender is Entry FilterEntry)
+        if (sender is Entry FilterEntry && FilterEntry.Text is string)
             Filters = FilterEntry.Text.Split(",");
 
         Dictionary<string, string> FilterDictionary = [];

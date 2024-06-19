@@ -19,6 +19,7 @@ public partial class ProjectListPage : ContentPage
         viewmodel.Projects = Globals.User.GetProjects().ToObservableCollection();
         viewmodel.FilteredProjects = viewmodel.Projects;
         viewmodel.CanEditProjects = Globals.User.Employee.CanEditProjects;
+        ApplyFilters(FindByName("ProjectFilter"), null);
         UpdateSort();
     }
 
@@ -57,7 +58,7 @@ public partial class ProjectListPage : ContentPage
     {
         string[] Filters = [];
 
-        if (sender is Entry FilterEntry)
+        if (sender is Entry FilterEntry && FilterEntry.Text is string)
             Filters = FilterEntry.Text.Split(",");
 
         Dictionary<string, string> FilterDictionary = [];
