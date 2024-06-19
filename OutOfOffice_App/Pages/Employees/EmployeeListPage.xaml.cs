@@ -17,7 +17,7 @@ public partial class EmployeeListPage : ContentPage
     private void CollectionView_Loaded(object sender, EventArgs e)
     {
         viewmodel.Employees = Globals.User.GetEmployees().ToObservableCollection();
-        viewmodel.CanEditEmployees = Globals.User.PermissionList.CanEditEmployees;
+        viewmodel.CanEditEmployees = Globals.User.Permissions.CanEditEmployees;
 
         if (viewmodel.ComfinedPosition != "")
             viewmodel.Employees = viewmodel.Employees.Where(e => e.Position == viewmodel.ComfinedPosition).ToObservableCollection();

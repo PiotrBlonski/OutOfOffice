@@ -21,10 +21,10 @@ public partial class ProjectPage : ContentPage
 
     private void ManagerPicker_Loaded(object sender, EventArgs e)
     {
-        viewModel.CanChangeDetails = Globals.User.PermissionList.CanEditProjects;
-        viewModel.CanChangeManager = Globals.User.PermissionList.CanChangeManager;
+        viewModel.CanChangeDetails = Globals.User.Permissions.CanEditProjects;
+        viewModel.CanChangeManager = Globals.User.Permissions.CanChangeManager;
         viewModel.Editing = viewModel.Project.Manager_Id != 0;
-        viewModel.CanRemoveProject = Globals.User.PermissionList.CanRemoveProjects;
+        viewModel.CanRemoveProject = Globals.User.Permissions.CanRemoveProjects;
 
         List<Employee> Employees = Globals.User.GetEmployees();
         viewModel.Managers = Employees.Where(e => e.Position == "Project Manager").ToList();

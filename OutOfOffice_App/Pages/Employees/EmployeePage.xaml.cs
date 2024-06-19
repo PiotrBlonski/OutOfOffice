@@ -20,13 +20,13 @@ public partial class EmployeePage : ContentPage
 
     private void VerticalStackLayout_Loaded(object sender, EventArgs e)
     {
-        viewmodel.CanChangeDetails = Globals.User.PermissionList.CanEditEmployees;
+        viewmodel.CanChangeDetails = Globals.User.Permissions.CanEditEmployees;
         viewmodel.Editing = viewmodel.Employee.Id > 0;
-        viewmodel.CanChangePartner = Globals.User.PermissionList.CanEditPartner;
-        viewmodel.CanChangePosition = Globals.User.PermissionList.CanChangePosition;
+        viewmodel.CanChangePartner = Globals.User.Permissions.CanEditPartner;
+        viewmodel.CanChangePosition = Globals.User.Permissions.CanChangePosition;
         viewmodel.AvatarPath = viewmodel.Employee.Avatar ?? "";
 
-        if (Globals.User.PermissionList.CanEditPartner)
+        if (Globals.User.Permissions.CanEditPartner)
         {
             viewmodel.Partners = Globals.User.GetEmployees().Where(e => e.Position == "HR Manager").ToObservableCollection();
             viewmodel.PartnerList = viewmodel.Partners.Select(e => e.Name).ToObservableCollection();
