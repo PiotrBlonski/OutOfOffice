@@ -18,9 +18,9 @@ public partial class AbsencePage : ContentPage
 
     private void Picker_Loaded(object sender, EventArgs e)
     {
-        viewModel.CanChangeStatus = Globals.User.Employee.CanEditRequests && viewModel.LeaveRequest.Status < 2;
+        viewModel.CanChangeStatus = Globals.User.PermissionList.CanEditRequests && viewModel.LeaveRequest.Status < 2;
         viewModel.CanChangeDetails = Globals.User.Employee.Id == viewModel.LeaveRequest.Employee_Id && viewModel.LeaveRequest.Status < 2;
         viewModel.Editing = viewModel.LeaveRequest.Status != 0;
-        viewModel.CanRemoveRequest = Globals.User.Employee.CanRemoveRequests;
+        viewModel.CanRemoveRequest = Globals.User.PermissionList.CanRemoveRequests;
     }
 }
