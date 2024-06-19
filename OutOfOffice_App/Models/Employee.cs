@@ -43,5 +43,6 @@ namespace OutOfOffice.Models
 
         private bool isSelected;
         public bool IsSelected { get => isSelected; set => SetProperty(ref isSelected, value); }
+        public bool Selected => !IsSelected;
     }
 }

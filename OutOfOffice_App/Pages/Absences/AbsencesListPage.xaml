@@ -46,6 +46,7 @@
                     <Entry FontSize="20"
                            BackgroundColor="Transparent"
                            TextChanged="ApplyFilters"
+                           x:Name="RequestFilter"
                            Placeholder="Type your filters here, for example: name=Peter"
                            PlaceholderColor="{StaticResource Secondary}"/>
                 </Frame>

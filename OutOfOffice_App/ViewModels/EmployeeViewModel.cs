@@ -86,7 +86,11 @@ namespace OutOfOffice.ViewModels
                 if (Editing)
                 {
                     HttpResponseMessage Response = Globals.User.UploadAvatar(Result.FullPath, Employee.Id);
-                    if (Response.IsSuccessStatusCode) OnPropertyChanged(nameof(Employee));
+                    if (Response.IsSuccessStatusCode)
+                    {
+                        AvatarPath = Employee.Avatar;
+                        OnPropertyChanged(nameof(AvatarPath));
+                    }
                 }
                 else AvatarPath = Result.FullPath;
             }
