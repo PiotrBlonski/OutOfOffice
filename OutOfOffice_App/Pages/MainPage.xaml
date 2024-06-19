@@ -42,32 +42,29 @@
                 </Grid>
             </Grid>
             <Grid Grid.Row="1"
-                  RowDefinitions="Auto,Auto,Auto"
                   ColumnDefinitions=".3*,*,.3*"
                   RowSpacing="15">
-                <Button Text="Absence Notices"
-                        FontSize="30"
-                        IsVisible="{Binding CanViewAbsences}"
-                        HeightRequest="100"
-                        Clicked="OpenAbsences"
-                        CornerRadius="5"
-                        Grid.Column="1"/>
-                <Button Text="Employees"
-                        IsVisible="{Binding CanViewEmployees}"
-                        HeightRequest="100"
-                        Clicked="OpenEmployees"
-                        FontSize="30"
-                        Grid.Row="1"
-                        CornerRadius="5"
-                        Grid.Column="1"/>
-                <Button Text="Projects"
-                        IsVisible="{Binding CanViewProjects}"
-                        HeightRequest="100"
-                        FontSize="30"
-                        Clicked="OpenProjects"
-                        Grid.Row="2"
-                        CornerRadius="5"
-                        Grid.Column="1"/>
+                <VerticalStackLayout Grid.Column="1"
+                                     Spacing="15">
+                    <Button Text="Absence Notices"
+                            FontSize="30"
+                            IsVisible="{Binding CanViewAbsences}"
+                            HeightRequest="100"
+                            Clicked="OpenAbsences"
+                            CornerRadius="5"/>
+                    <Button Text="Employees"
+                            IsVisible="{Binding CanViewEmployees}"
+                            HeightRequest="100"
+                            Clicked="OpenEmployees"
+                            FontSize="30"
+                            CornerRadius="5"/>
+                    <Button Text="Projects"
+                            IsVisible="{Binding CanViewProjects}"
+                            HeightRequest="100"
+                            FontSize="30"
+                            Clicked="OpenProjects"
+                            CornerRadius="5"/>
+                </VerticalStackLayout>
             </Grid>
         </Grid>
         <Grid BackgroundColor="{StaticResource Quaternary}"
