@@ -111,6 +111,24 @@ router.post('/refreshtoken', (req, res) => {
     })
 })
 
+router.get('/permissions', authenticateToken, (req, res) => {
+    position = req.userdata.Position;
+    res.json({
+        CanSubmitRequests: position == "Employee",
+        CanViewRequests: position == "HR Manager" || position == "Project Manager" || position == "Administrator" || position == "Employee",
+        CanEditRequests: position == "HR Manager" || position == "Project Manager",
+        CanViewReviews: position == "HR Manager" || position == "Project Manager" || position == "Administrator" || position == "Employee",
+        CanRemoveRequests: position == "Administrator",
+        CanViewProjects: position == "HR Manager" || position == "Project Manager" || position == "Administrator" || position == "Employee",
+        CanEditProjects: position == "Project Manager" || position == "Administrator",
+        CanRemoveProjects: position == "Administrator",
+        CanChangeManager: position == "Administrator",
+        CanViewEmployees: position == "HR Manager" || position == "Project Manager" || position == "Administrator",
+        CanEditEmployees: position == "HR Manager" || position == "Administrator",
+        CanEditPartner: position == "Administrator",
+        CanChangeposition: position == "Administrator"
+    })
+})
 
 //function used to create temporary token
 function generateAccessToken(user) {
