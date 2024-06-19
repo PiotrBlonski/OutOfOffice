@@ -7,7 +7,8 @@
     <Grid>
         <Grid RowDefinitions=".3*, *"
               BackgroundColor="{StaticResource Quaternary}"
-              Loaded="Grid_Loaded">
+              Loaded="Grid_Loaded"
+              RowSpacing="15">
             <Grid BackgroundColor="{StaticResource Tertiary}">
                 <Grid RowDefinitions="*,*,*"
                       ColumnDefinitions="Auto,*"
@@ -43,8 +44,7 @@
             <Grid Grid.Row="1"
                   RowDefinitions="Auto,Auto,Auto"
                   ColumnDefinitions=".3*,*,.3*"
-                  RowSpacing="15"
-                  Padding="15,15">
+                  RowSpacing="15">
                 <Button Text="Absence Notices"
                         FontSize="30"
                         IsVisible="{Binding CanViewAbsences}"

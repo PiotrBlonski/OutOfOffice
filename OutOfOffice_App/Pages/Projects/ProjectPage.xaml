@@ -89,9 +89,8 @@
             <Label Text="Assigned Employees:"
                    FontSize="20"/>
             <Frame HeightRequest="600"
-                   Padding="10,0,10,10">
-                <Grid RowDefinitions="*,.2*"
-                      RowSpacing="15">
+                   Padding="10,0">
+                <Grid RowDefinitions="*,Auto">
                      <CollectionView ItemsSource="{Binding AssignedEmployees}">
                         <CollectionView.ItemsLayout>
                             <LinearItemsLayout Orientation="Vertical"
@@ -135,6 +134,8 @@
                             BackgroundColor="{StaticResource Quaternary}"
                             Text="Change List"
                             FontSize="20"
+                            HeightRequest="150"
+                            Margin="15"
                             IsVisible="{Binding CanChangeDetails}"
                             TextColor="{StaticResource Secondary}"
                             Command="{Binding ChangeAssignedEmployeesCommand}"/>

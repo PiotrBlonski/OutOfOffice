@@ -24,6 +24,7 @@ public partial class EmployeePage : ContentPage
         viewmodel.Editing = viewmodel.Employee.Id > 0;
         viewmodel.CanChangePartner = Globals.User.Employee.CanEditPartner;
         viewmodel.CanChangePosition = Globals.User.Employee.CanChangePosition;
+        viewmodel.AvatarPath = viewmodel.Employee.Avatar ?? "";
 
         if (Globals.User.Employee.CanEditPartner)
         {

@@ -51,6 +51,9 @@ namespace OutOfOffice.ViewModels
         [ObservableProperty]
         bool canChangePosition;
 
+        [ObservableProperty]
+        string avatarPath = "";
+
         [RelayCommand]
         async Task Submit()
         {
@@ -64,7 +67,12 @@ namespace OutOfOffice.ViewModels
                 Response = Editing ? Globals.User.EditEmployee(Employee) : Globals.User.CreateEmployee(Employee, Login, Password);
 
                 if (Response.IsSuccessStatusCode)
+                {
+                    if (AvatarPath != "" && !Editing)
+                        Globals.User.UploadAvatar(AvatarPath, int.Parse(Task.Run(Response.Content.ReadAsStringAsync).Result.Split(':')[1]));
+
                     await Shell.Current.GoToAsync("..");
+                }
             }
         }
 
@@ -75,8 +83,12 @@ namespace OutOfOffice.ViewModels
 
             if (Result != null && (Result.FileName.EndsWith("jpg", StringComparison.OrdinalIgnoreCase) || Result.FileName.EndsWith("png", StringComparison.OrdinalIgnoreCase)))
             {
-                HttpResponseMessage Response = Globals.User.UploadAvatar(Result.FullPath, Employee.Id);
-                if (Response.IsSuccessStatusCode) OnPropertyChanged(nameof(Employee));
+                if (Editing)
+                {
+                    HttpResponseMessage Response = Globals.User.UploadAvatar(Result.FullPath, Employee.Id);
+                    if (Response.IsSuccessStatusCode) OnPropertyChanged(nameof(Employee));
+                }
+                else AvatarPath = Result.FullPath;
             }
             else if (Result != null) await Shell.Current.DisplayAlert("Error", "Incorrect file format only .jpg or .png files are compatible", "OK");
         }
