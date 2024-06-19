@@ -19,8 +19,8 @@ public partial class AbsencesListPage : ContentPage
     {
         viewmodel.LeaveRequests = Globals.User.GetLeaveRequests().ToObservableCollection();
         viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests;
-        viewmodel.CanSubmitLeaveRequest = Globals.User.PermissionList.CanSubmitRequests;
-        viewmodel.CanViewReview = Globals.User.PermissionList.CanViewReviews;
+        viewmodel.CanSubmitLeaveRequest = Globals.User.Permissions.CanSubmitRequests;
+        viewmodel.CanViewReview = Globals.User.Permissions.CanViewReviews;
 
         if (viewmodel.CanViewReview)
         {
