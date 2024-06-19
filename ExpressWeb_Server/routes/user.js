@@ -31,10 +31,10 @@ router.post('/create', authenticateToken, checkDataStrength, (req, res) => {
                 let partner = req.userdata.Position == allowed[1] ? req.userdata.Id : req.body.partner
                 connection.query(`SELECT * FROM employee WHERE login = '${req.body.login}';`, (error, results) => {
                     if (error) return res.sendStatus(500)
-                    connection.query(`INSERT INTO peoplepartner (Employee_Id, Partner_Id) VALUES ('${results[0].Id}', '${partner}');`, (error) => {
-                        console.log(error)
+                    var userid = results[0].Id
+                    connection.query(`INSERT INTO peoplepartner (Employee_Id, Partner_Id) VALUES ('${userid}}', '${partner}');`, (error) => {
                         if (error) return res.sendStatus(500)
-                        res.status(200).send("User Created")
+                        res.status(200).send("User Created with id:" + userid)
                     })
                 })
             }

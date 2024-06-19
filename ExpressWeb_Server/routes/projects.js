@@ -14,7 +14,8 @@ router.get('/', auth.authenticateToken, (req, res) => {
 
     let constrain = ''
     let distinct = req.userdata.Position == allowed[1] ? 'DISTINCT' : ''
-    //apply constrains
+
+    //project manager can view their projects, employee can view projects assigned to, hr manager can view projects of their employees
     if (req.userdata.Position == allowed[3])
         constrain = `JOIN projectmember ON projectmember.Project_Id = project.Id WHERE projectmember.Employee_Id = ${req.userdata.Id}`
     else if (req.userdata.Position == allowed[2])
@@ -30,16 +31,24 @@ router.get('/', auth.authenticateToken, (req, res) => {
 
 //get list of employees assigned to project
 router.get('/assigned', auth.authenticateToken, (req, res) => {
-    allowed = ['Administrator', 'Project Manager']
+    allowed = ['Administrator', 'Project Manager', 'HR Manager']
 
     //do not allow users outside of list
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
-    //do not allow access to project that manager is not assigned to
-    connection.query(`SELECT * FROM project WHERE id = ${req.body.projectid} AND Manager_Id = ${req.userdata.Id};`, (error, results) => {
+    let constrain = ''
+    let distinct = req.userdata.Position == allowed[1] ? 'DISTINCT' : ''
+
+    //project manager can view their projects, hr manager can view projects of their employees
+    if (req.userdata.Position == allowed[1])
+        constrain = `WHERE project.Manager_Id = ${req.userdata.Id}`
+    else if (req.userdata.Position == allowed[2])
+        constrain = `JOIN projectmember ON projectmember.Project_Id = project.Id JOIN employee ON employee.Id = projectmember.Employee_Id JOIN peoplepartner ON peoplepartner.Employee_Id = employee.Id WHERE peoplepartner.Partner_Id = ${req.userdata.Id}`
+    
+    connection.query(`SELECT ${distinct} project.*, project.ProjectType_Id - 1 AS ProjectTypeId FROM project ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
-        if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(401)
+        if (results.length == 0) return res.sendStatus(401)
 
         connection.query(`SELECT employee.* FROM employee JOIN projectmember on projectmember.Employee_Id = employee.Id WHERE projectmember.Project_Id = ${req.body.projectid};`, (error, results) => {
             if (error) return res.sendStatus(500)
@@ -94,8 +103,12 @@ router.post('/edit', auth.authenticateToken, (req, res) => {
     //administrator can make anyone head of project
     manager = req.userdata.Position == allowed[0] ? req.body.manager : req.userdata.Id
 
+    constrain = `WHERE project.Id = ${req.body.projectid}`
     //check if project manager is owner of project
-    connection.query(`SELECT * FROM project WHERE project.Manager_Id = ${req.userdata.Id} AND project.Id = ${req.body.projectid};`, (error, results) => {
+    if (req.userdata.Position == allowed[1])
+        constrain = `WHERE project.Manager_Id = ${req.userdata.Id} AND project.Id = ${req.body.projectid}`
+
+    connection.query(`SELECT * FROM project ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
         if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(400)
 
@@ -131,14 +144,23 @@ router.post('/assign', auth.authenticateToken, (req, res) => {
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
-    //check if employee is member of project already
-    connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
-        if (error) return res.sendStatus(500)
-        if (results.length > 0) return res.sendStatus(400)
+    constrain = `WHERE project.Id = ${req.body.projectid}`
+    //project manager can edit employees only on their projects
+    if (req.userdata.Position == allowed[1])
+        constrain = `WHERE project.Manager_Id = ${req.userdata.Id} AND project.Id = ${req.body.projectid}`
 
-        connection.query(`INSERT INTO projectmember(employee_Id, project_Id) VALUES (${req.body.employeeid}, ${req.body.projectid});`, (error) => {
+    connection.query(`SELECT * FROM project ${constrain};`, (error, results) => {
+        if (error) return res.sendStatus(500)
+        if (results.length == 0) return res.sendStatus(401)
+
+        connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
             if (error) return res.sendStatus(500)
-            res.sendStatus(200)
+            if (results.length > 0) return res.sendStatus(400)
+
+            connection.query(`INSERT INTO projectmember(employee_Id, project_Id) VALUES (${req.body.employeeid}, ${req.body.projectid});`, (error) => {
+                if (error) return res.sendStatus(500)
+                res.sendStatus(200)
+            })
         })
     })
 })
@@ -151,14 +173,19 @@ router.post('/unassign', auth.authenticateToken, (req, res) => {
     if (allowed.indexOf(req.userdata.Position) == -1)
         return res.sendStatus(401)
 
-    //check if employee is member of project
-    connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
+    constrain = `WHERE project.Id = ${req.body.projectid}`
+    //project manager can edit employees only on their projects
+    if (req.userdata.Position == allowed[1])
+        constrain = `WHERE project.Manager_Id = ${req.userdata.Id} AND project.Id = ${req.body.projectid}`
+
+    connection.query(`SELECT * FROM project ${constrain};`, (error, results) => {
         if (error) return res.sendStatus(500)
-        if (results.length == 0) return res.sendStatus(400)
-        //check if project manager is owner of project
-        connection.query(`SELECT * FROM projectmember JOIN project ON project.Id = projectmember.Project_Id WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid} AND project.Manager_Id = ${req.userdata.Id};`, (error, results) => {
+        if (results.length == 0) return res.sendStatus(401)
+
+        //check if employee is member of project
+        connection.query(`SELECT * FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error, results) => {
             if (error) return res.sendStatus(500)
-            if (req.userdata.Position != allowed[0] && results.length == 0) return res.sendStatus(400)
+            if (results.length == 0) return res.sendStatus(400)
 
             connection.query(`DELETE FROM projectmember WHERE employee_Id = ${req.body.employeeid} AND project_Id = ${req.body.projectid};`, (error) => {
                 if (error) return res.sendStatus(500)
