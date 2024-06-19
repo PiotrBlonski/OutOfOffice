@@ -28,7 +28,7 @@
                                Padding="0"
                                HeightRequest="150"
                                WidthRequest="150">
-                            <Image Source="{Binding Employee.Avatar}"
+                            <Image Source="{Binding AvatarPath}"
                                    Aspect="AspectFill"/>
                         </Frame>
                     </Frame>

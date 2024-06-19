@@ -119,7 +119,6 @@ router.post('/leave/changestatus', auth.authenticateToken, (req, res) => {
 
 //changing status of leave requests approving or denying by higher ups
 router.post('/leave/remove', auth.authenticateToken, (req, res) => {
-    //positions with any access
     allowed = ['Administrator']
 
     //do not allow users outside of list
