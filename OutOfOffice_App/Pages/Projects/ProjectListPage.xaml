@@ -45,7 +45,7 @@
                        BackgroundColor="{StaticResource Quaternary}">
                     <Entry FontSize="20"
                            BackgroundColor="Transparent"
-                           TextChanged="ApplyFilters"
+                           TextChanged="ProjectFilter_TextChanged"
                            x:Name="ProjectFilter"
                            Placeholder="Type your filters here, for example: status=Ongoing"
                            PlaceholderColor="{StaticResource Secondary}"/>

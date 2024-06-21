@@ -19,8 +19,9 @@ public partial class ProjectListPage : ContentPage
         viewmodel.Projects = Globals.User.GetProjects().ToObservableCollection();
         viewmodel.FilteredProjects = viewmodel.Projects;
         viewmodel.CanEditProjects = Globals.User.Permissions.CanEditProjects;
-        ApplyFilters(FindByName("ProjectFilter"), null);
-        UpdateSort();
+
+        Task.Run(() => ApplyFilters(FindByName("ProjectFilter")));
+        Task.Run(UpdateSort);
     }
 
     private async void BackButton_Clicked(object sender, EventArgs e)
@@ -30,7 +31,7 @@ public partial class ProjectListPage : ContentPage
 
     private void SortPicker_SelectedIndexChanged(object sender, EventArgs e)
     {
-        UpdateSort();
+        Task.Run(UpdateSort);
     }
 
     private void UpdateSort()
@@ -51,10 +52,11 @@ public partial class ProjectListPage : ContentPage
     private void OrderButtonClicked(object sender, EventArgs e)
     {
         viewmodel.Descending = !viewmodel.Descending;
-        UpdateSort();
+        Task.Run(UpdateSort);
     }
 
-    private void ApplyFilters(object sender, TextChangedEventArgs e)
+    Dictionary<string, string> PreviousFilters = [];
+    private void ApplyFilters(object sender)
     {
         string[] Filters = [];
 
@@ -71,7 +73,9 @@ public partial class ProjectListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-        viewmodel.FilteredProjects = viewmodel.Projects.Where(p =>
+        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        {
+            viewmodel.FilteredProjects = viewmodel.Projects.Where(p =>
             (!FilterDictionary.ContainsKey("name") || p.Name.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&
             (!FilterDictionary.ContainsKey("status") || p.StatusString.Contains(FilterDictionary["status"], StringComparison.OrdinalIgnoreCase)) &&
             (!FilterDictionary.ContainsKey("startdate") || p.StartDateOnly.Split(' ')[1].Contains(FilterDictionary["startdate"])) &&
@@ -80,6 +84,14 @@ public partial class ProjectListPage : ContentPage
             (!FilterDictionary.ContainsKey("manager") || p.Manager.Contains(FilterDictionary["manager"], StringComparison.OrdinalIgnoreCase)))
             .ToObservableCollection();
 
-        UpdateSort();
+            UpdateSort();
+        }
+
+        PreviousFilters = FilterDictionary;
+    }
+
+    private void ProjectFilter_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        Task.Run(() => ApplyFilters(sender));
     }
 }
