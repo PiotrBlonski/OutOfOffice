@@ -15,7 +15,7 @@ public partial class AbsencesListPage : ContentPage
         InitializeComponent();
     }
 
-    private void CollectionView_Loaded(object sender, EventArgs e)
+    private void ContentPage_Loaded(object sender, EventArgs e)
     {
         viewmodel.LeaveRequests = Globals.User.GetLeaveRequests().ToObservableCollection();
         viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests;

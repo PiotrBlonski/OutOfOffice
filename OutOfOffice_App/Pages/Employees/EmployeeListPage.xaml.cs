@@ -14,7 +14,7 @@ public partial class EmployeeListPage : ContentPage
         viewmodel = vm;
         InitializeComponent();
     }
-    private void CollectionView_Loaded(object sender, EventArgs e)
+    private void ContentPage_Loaded(object sender, EventArgs e)
     {
         viewmodel.Employees = Globals.User.GetEmployees().ToObservableCollection();
         viewmodel.CanEditEmployees = Globals.User.Permissions.CanEditEmployees;

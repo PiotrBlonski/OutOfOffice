@@ -4,7 +4,8 @@
              x:Class="OutOfOffice.Pages.EmployeeListPage"
              xmlns:model="clr-namespace:OutOfOffice.Models"
              xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
-             x:DataType="viewmodel:EmployeeListViewModel">
+             x:DataType="viewmodel:EmployeeListViewModel"
+             Loaded="ContentPage_Loaded">
      <Grid RowDefinitions="Auto,*,Auto"
            BackgroundColor="{StaticResource Quaternary}">
          <Grid BackgroundColor="{StaticResource Primary}"
@@ -98,7 +99,6 @@
         <Grid Grid.Row="1"
               Padding="15,0">
             <CollectionView ItemsSource="{Binding SortedEmployees}"
-                            Loaded="CollectionView_Loaded"
                             VerticalScrollBarVisibility="Always">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical"
