@@ -42,8 +42,8 @@ public partial class AbsencesListPage : ContentPage
             }
         }
 
-        ApplyFilters(FindByName("RequestFilter"), null);
-        UpdateSort();
+        Task.Run(() => ApplyFilters(FindByName("RequestFilter")));
+        Task.Run(UpdateSort);
     }
 
     private void SortPicker_SelectedIndexChanged(object sender, EventArgs e) => UpdateSort();
@@ -84,10 +84,11 @@ public partial class AbsencesListPage : ContentPage
     private void OrderButtonClicked(object sender, EventArgs e)
     {
         viewmodel.Descending = !viewmodel.Descending;
-        UpdateSort();
+        Task.Run(UpdateSort);
     }
 
-    private void ApplyFilters(object sender, TextChangedEventArgs e)
+    Dictionary<string, string> PreviousFilters = [];
+    private void ApplyFilters(object sender)
     {
         string[] Filters = [];
 
@@ -104,8 +105,9 @@ public partial class AbsencesListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-
-        viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests.Where(l =>
+        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        {
+            viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests.Where(l =>
             (!FilterDictionary.ContainsKey("name") || l.Owner.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&
             (!FilterDictionary.ContainsKey("status") || l.StatusString.Contains(FilterDictionary["status"], StringComparison.OrdinalIgnoreCase)) &&
             (!FilterDictionary.ContainsKey("startdate") || l.StartDateOnly.Split(' ')[1].Contains(FilterDictionary["startdate"])) &&
@@ -115,6 +117,14 @@ public partial class AbsencesListPage : ContentPage
             (!FilterDictionary.ContainsKey("reason") || l.Reason.Contains(FilterDictionary["reason"], StringComparison.OrdinalIgnoreCase)))
             .ToObservableCollection();
 
-        UpdateSort();
+            UpdateSort();
+        }
+
+        PreviousFilters = FilterDictionary;
+    }
+
+    private void RequestFilter_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        Task.Run(() => ApplyFilters(sender));
     }
 }
