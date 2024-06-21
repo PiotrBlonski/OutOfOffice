@@ -38,8 +38,8 @@ public partial class EmployeeListPage : ContentPage
 
         viewmodel.FilteredEmployees = viewmodel.Employees;
 
-        ApplyFilters(FindByName("FilterEntry"), null);
-        UpdateSort();
+        Task.Run(() => ApplyFilters(FindByName("FilterEntry")));
+        Task.Run(UpdateSort);
     }
     private async void BackButton_Clicked(object sender, EventArgs e)
     {
@@ -48,7 +48,7 @@ public partial class EmployeeListPage : ContentPage
 
     private void SortPicker_SelectedIndexChanged(object sender, EventArgs e)
     {
-        UpdateSort();
+        Task.Run(UpdateSort);
     }
 
     private void UpdateSort()
@@ -69,10 +69,11 @@ public partial class EmployeeListPage : ContentPage
     private void OrderButtonClicked(object sender, EventArgs e)
     {
         viewmodel.Descending = !viewmodel.Descending;
-        UpdateSort();
+        Task.Run(UpdateSort);
     }
 
-    private void ApplyFilters(object sender, TextChangedEventArgs e)
+    Dictionary<string, string> PreviousFilters = [];
+    private void ApplyFilters(object sender)
     {
         string[] Filters = [];
 
@@ -89,19 +90,29 @@ public partial class EmployeeListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-        viewmodel.FilteredEmployees = viewmodel.Employees.Where(e =>
-            (!FilterDictionary.ContainsKey("status") || e.StatusString.Contains(FilterDictionary["status"], StringComparison.OrdinalIgnoreCase)) &&
-            (!FilterDictionary.ContainsKey("position") || e.Position.Contains(FilterDictionary["position"], StringComparison.OrdinalIgnoreCase)) &&
-            (!FilterDictionary.ContainsKey("subdivision") || e.Subdivision.Contains(FilterDictionary["subdivision"], StringComparison.OrdinalIgnoreCase)) &&
-            (!FilterDictionary.ContainsKey("name") || e.Name.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&
-            (!viewmodel.IsSelecting || (!FilterDictionary.TryGetValue("selected", out string? value) || (!bool.TryParse(value, out bool IsSelected) || IsSelected == e.IsSelected))))
-            .ToObservableCollection();
+        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        {
+            viewmodel.FilteredEmployees = viewmodel.Employees.Where(e =>
+                (!FilterDictionary.ContainsKey("status") || e.StatusString.Contains(FilterDictionary["status"], StringComparison.OrdinalIgnoreCase)) &&
+                (!FilterDictionary.ContainsKey("position") || e.Position.Contains(FilterDictionary["position"], StringComparison.OrdinalIgnoreCase)) &&
+                (!FilterDictionary.ContainsKey("subdivision") || e.Subdivision.Contains(FilterDictionary["subdivision"], StringComparison.OrdinalIgnoreCase)) &&
+                (!FilterDictionary.ContainsKey("name") || e.Name.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&
+                (!viewmodel.IsSelecting || (!FilterDictionary.TryGetValue("selected", out string? value) || (!bool.TryParse(value, out bool IsSelected) || IsSelected == e.IsSelected))))
+                .ToObservableCollection();
 
-        UpdateSort();
+            UpdateSort();
+        }
+
+        PreviousFilters = FilterDictionary;
     }
 
     private async void ApplyButton_Clicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..", new Dictionary<string, object> { { "SelectedEmployees", viewmodel.Employees.Where(e => e.IsSelected).ToList() }, { "DidSelect", true } });
+    }
+
+    private void FilterEntry_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        Task.Run(() => ApplyFilters(sender));
     }
 }
