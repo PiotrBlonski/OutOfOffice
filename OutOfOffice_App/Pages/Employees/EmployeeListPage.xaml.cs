@@ -38,7 +38,7 @@ public partial class EmployeeListPage : ContentPage
 
         viewmodel.FilteredEmployees = viewmodel.Employees;
 
-        Task.Run(() => ApplyFilters(FindByName("FilterEntry")));
+        ApplyFilters(FindByName("FilterEntry"), true);
         Task.Run(UpdateSort);
     }
     private async void BackButton_Clicked(object sender, EventArgs e)
@@ -73,7 +73,7 @@ public partial class EmployeeListPage : ContentPage
     }
 
     Dictionary<string, string> PreviousFilters = [];
-    private void ApplyFilters(object sender)
+    private void ApplyFilters(object sender, bool Reloaded = false)
     {
         string[] Filters = [];
 
@@ -90,7 +90,7 @@ public partial class EmployeeListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        if (Reloaded || FilterDictionary.Count != PreviousFilters.Count || !FilterDictionary.All(PreviousFilters.Contains))
         {
             viewmodel.FilteredEmployees = viewmodel.Employees.Where(e =>
                 (!FilterDictionary.ContainsKey("status") || e.StatusString.Contains(FilterDictionary["status"], StringComparison.OrdinalIgnoreCase)) &&
