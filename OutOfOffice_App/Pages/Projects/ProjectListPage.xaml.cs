@@ -14,13 +14,13 @@ public partial class ProjectListPage : ContentPage
         InitializeComponent();
     }
 
-    private void CollectionView_Loaded(object sender, EventArgs e)
+    private void ContentPage_Loaded(object sender, EventArgs e)
     {
         viewmodel.Projects = Globals.User.GetProjects().ToObservableCollection();
         viewmodel.FilteredProjects = viewmodel.Projects;
         viewmodel.CanEditProjects = Globals.User.Permissions.CanEditProjects;
 
-        Task.Run(() => ApplyFilters(FindByName("ProjectFilter")));
+        ApplyFilters(FindByName("ProjectFilter"), true);
         Task.Run(UpdateSort);
     }
 
@@ -56,7 +56,7 @@ public partial class ProjectListPage : ContentPage
     }
 
     Dictionary<string, string> PreviousFilters = [];
-    private void ApplyFilters(object sender)
+    private void ApplyFilters(object sender, bool Reloaded = false)
     {
         string[] Filters = [];
 
@@ -73,7 +73,7 @@ public partial class ProjectListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        if (Reloaded || FilterDictionary.Count != PreviousFilters.Count || !FilterDictionary.All(PreviousFilters.Contains))
         {
             viewmodel.FilteredProjects = viewmodel.Projects.Where(p =>
             (!FilterDictionary.ContainsKey("name") || p.Name.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&

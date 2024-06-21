@@ -15,7 +15,7 @@ public partial class AbsencesListPage : ContentPage
         InitializeComponent();
     }
 
-    private void CollectionView_Loaded(object sender, EventArgs e)
+    private void ContentPage_Loaded(object sender, EventArgs e)
     {
         viewmodel.LeaveRequests = Globals.User.GetLeaveRequests().ToObservableCollection();
         viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests;
@@ -42,7 +42,7 @@ public partial class AbsencesListPage : ContentPage
             }
         }
 
-        Task.Run(() => ApplyFilters(FindByName("RequestFilter")));
+        ApplyFilters(FindByName("RequestFilter"), true);
         Task.Run(UpdateSort);
     }
 
@@ -88,7 +88,7 @@ public partial class AbsencesListPage : ContentPage
     }
 
     Dictionary<string, string> PreviousFilters = [];
-    private void ApplyFilters(object sender)
+    private void ApplyFilters(object sender, bool Reloaded = true)
     {
         string[] Filters = [];
 
@@ -105,7 +105,7 @@ public partial class AbsencesListPage : ContentPage
                 FilterDictionary.Add(Regex.Replace(SplitFilter[0], @"\s+", ""), SplitFilter[1].Trim().ToLower());
         }
 
-        if (!FilterDictionary.All(PreviousFilters.Contains) || FilterDictionary.Count != PreviousFilters.Count)
+        if (Reloaded || FilterDictionary.Count != PreviousFilters.Count || !FilterDictionary.All(PreviousFilters.Contains))
         {
             viewmodel.FilteredLeaveRequests = viewmodel.LeaveRequests.Where(l =>
             (!FilterDictionary.ContainsKey("name") || l.Owner.Contains(FilterDictionary["name"], StringComparison.OrdinalIgnoreCase)) &&

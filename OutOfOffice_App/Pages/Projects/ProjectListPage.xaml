@@ -4,7 +4,8 @@
              x:Class="OutOfOffice.Pages.ProjectListPage"
              xmlns:model="clr-namespace:OutOfOffice.Models"
              xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
-             x:DataType="viewmodel:ProjectListViewModel">
+             x:DataType="viewmodel:ProjectListViewModel"
+             Loaded="ContentPage_Loaded">
     <Grid RowDefinitions="Auto,*"
           BackgroundColor="{StaticResource Quaternary}">
         <Grid BackgroundColor="{StaticResource Primary}"
@@ -96,7 +97,6 @@
             </Grid>
         </Grid>
         <CollectionView ItemsSource="{Binding SortedProjects}"
-                        Loaded="CollectionView_Loaded"
                         Grid.Row="1"
                         VerticalScrollBarVisibility="Always">
             <CollectionView.ItemsLayout>

@@ -4,7 +4,8 @@
              x:Class="OutOfOffice.Pages.AbsencesListPage"
              xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
              xmlns:model="clr-namespace:OutOfOffice.Models"
-             x:DataType="viewmodel:AbsencesListViewModel">
+             x:DataType="viewmodel:AbsencesListViewModel"
+             Loaded="ContentPage_Loaded">
     <Grid RowDefinitions="Auto,*"
           BackgroundColor="{StaticResource Quaternary}">
         <Grid BackgroundColor="{StaticResource Primary}"
@@ -96,7 +97,6 @@
             </Grid>
         </Grid>
         <CollectionView ItemsSource="{Binding SortedLeaveRequests}"
-                        Loaded="CollectionView_Loaded"
                         Grid.Row="1"
                         VerticalScrollBarVisibility="Always">
             <CollectionView.ItemsLayout>
