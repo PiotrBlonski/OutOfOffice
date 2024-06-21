@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 namespace OutOfOffice.ViewModels
 {
     [QueryProperty("IsSelecting", "IsSelecting")]
-    [QueryProperty("ChoosenEmployees", "ChoosenEmployees")]
+    [QueryProperty("SelectedEmployees", "SelectedEmployees")]
     [QueryProperty("ComfinedPosition", "ComfinedPosition")]
     public partial class EmployeeListViewModel : ObservableObject
     {
@@ -21,7 +21,7 @@ namespace OutOfOffice.ViewModels
         ObservableCollection<Employee> filteredEmployees = [];
 
         [ObservableProperty]
-        List<Employee> choosenEmployees = [];
+        List<Employee> selectedEmployees = [];
 
         [ObservableProperty]
         ObservableCollection<string> sortList = ["None", "Name", "Position", "Subdivision", "Status"];

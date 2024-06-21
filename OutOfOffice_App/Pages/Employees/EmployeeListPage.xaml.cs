@@ -27,7 +27,7 @@ public partial class EmployeeListPage : ContentPage
             if (!viewmodel.SortList.Contains("Selected"))
                 viewmodel.SortList.Add("Selected");
 
-            foreach (Employee ChoosenEmployee in viewmodel.ChoosenEmployees)
+            foreach (Employee ChoosenEmployee in viewmodel.SelectedEmployees)
             {
                 Employee? Employee = viewmodel.Employees.FirstOrDefault(e => e.Id == ChoosenEmployee.Id);
 
