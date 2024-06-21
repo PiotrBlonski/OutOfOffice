@@ -101,7 +101,7 @@ namespace OutOfOffice.ViewModels
         [RelayCommand]
         async Task ChangeAssignedEmployees(Employee Employee)
         {
-            await Shell.Current.GoToAsync($"{nameof(EmployeeListPage)}", new Dictionary<string, object> { { "ChoosenEmployees", AssignedEmployees.Select(e => { e.IsSelected = false; return e; }).ToList() }, { "IsSelecting", true }, { "ComfinedPosition", "Employee" } });
+            await Shell.Current.GoToAsync($"{nameof(EmployeeListPage)}", new Dictionary<string, object> { { "SelectedEmployees", AssignedEmployees.ToList() }, { "IsSelecting", true }, { "ComfinedPosition", "Employee" } });
         }
 
         public void UnassignEmployee(Employee Employee)
