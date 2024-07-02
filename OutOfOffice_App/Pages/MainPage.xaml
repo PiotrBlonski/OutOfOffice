@@ -5,11 +5,12 @@
              xmlns:viewmodel="clr-namespace:OutOfOffice.ViewModels"
              x:DataType="viewmodel:MainViewModel">
     <Grid>
-        <Grid RowDefinitions=".3*, *"
+        <Grid RowDefinitions="Auto, *"
               BackgroundColor="{StaticResource Quaternary}"
               Loaded="Grid_Loaded"
               RowSpacing="15">
-            <Grid BackgroundColor="{StaticResource Tertiary}">
+            <Grid BackgroundColor="{StaticResource Tertiary}"
+                  HeightRequest="150">
                 <Grid RowDefinitions="*,*,*"
                       ColumnDefinitions="Auto,*"
                       Grid.Column="1"
